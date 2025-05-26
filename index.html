@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تنبيه: فشل التحميل!</title>
+    <title>تحذير: فشل التحميل!</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -45,7 +45,6 @@
             margin-bottom: 25px;
             color: #FFF;
             opacity: 0; /* لجعل النص يظهر تدريجياً */
-            /* animation: typeIn 0.05s forwards; */ /* هنلغيها هنا ونفعلها ب JS */
         }
         .progress-bar {
             width: 80%;
@@ -60,7 +59,6 @@
             height: 100%;
             width: 0%;
             background-color: #FF0000;
-            /* animation: fillProgress 10s forwards linear; */ /* هنلغيها هنا ونفعلها ب JS */
             border-radius: 15px;
             box-shadow: 0 0 10px #FF0000;
             transition: width 0.5s linear; /* لجعل الشريط يمتلئ بسرعة */
@@ -180,8 +178,8 @@
     <div class="overlay" id="popupOverlay">
         <div class="popup">
             <h2>تنبيه هام!</h2>
-            <p> لا يوجد اختارق حقيقي.</p>
-            <p>هذه الصفحة عملتها علي شانك علي شان احذرك مش اكتر انك بتلعب مع الشخص الغلط المره الجايه ملفاتك كلها هتتشفر و ريني هتستخدم الموبيل ازاي.</p>
+      <p> لا يوجد عملية اختراق </p>
+            <p>بس عمتنا انا هفتح الواتس بتاعك ولو بعت مسدج زي دي لحد تاني قول باي باي ل موبيلك </p>
             <button class="popup-button" onclick="closePopup()">فهمت</button>
         </div>
     </div>
@@ -223,12 +221,20 @@
         }
 
         async function startSequence() {
-            // تشغيل الصوت عند بداية التفاعل (بسبب قيود المتصفحات على التشغيل التلقائي)
+            // **ملاحظة بخصوص الصوت:**
+            // المتصفحات الحديثة (خاصة على الموبايلات) تمنع تشغيل الصوت تلقائيًا بدون تفاعل من المستخدم.
+            // لذلك، هذا السطر قد لا يعمل إلا بعد أول لمسة/نقرة على الشاشة.
             alarmSound.play().catch(e => console.error("Error playing sound:", e));
 
-            await typeText(paragraphs[0], messages[0], 0); // "جاري التحقق..."
-            await new Promise(resolve => setTimeout(resolve, 1000)); // انتظر ثانية
+            // تشغيل الرسائل الأولى
+            await typeText(paragraphs[0], "تم اكتشاف محاولة تحميل غير مصرح بها.", 0);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await typeText(paragraphs[1], "يتم الآن فحص سلامة النظام.", 0);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await typeText(paragraphs[2], "ملفاتك قد تكون في خطر.", 0);
+            await new Promise(resolve => setTimeout(resolve, 1500)); // انتظر ثانية ونصف قبل بدء التحميل
 
+            // بدء عملية التحميل وإظهار رسالة الفشل
             statusMessage.textContent = messages[1]; // "تحميل البيانات الخبيثة..."
             progressFill.style.width = '100%'; // تحميل الشريط بسرعة
             await new Promise(resolve => setTimeout(resolve, 800)); // انتظر 0.8 ثانية لاكتمال الشريط
@@ -243,24 +249,22 @@
             statusMessage.textContent = messages[3]; // "النظام الآن في حالة حظر."
             statusMessage.style.color = '#FF0000'; // نرجع اللون الأصلي
 
-            // يمكنك إضافة المزيد من المؤثرات هنا بعد فشل التحميل
-
             // For the demo, show the popup after a short delay
             await new Promise(resolve => setTimeout(resolve, 2000));
             // showPopup(); // ممكن تشغل البوب أب تلقائيا هنا أو تخلي الزر هو اللي يشغلها
         }
 
-        // Play sound when user interacts (due to browser autoplay policies)
-        document.addEventListener('click', function playAudioOnce() {
-            startSequence();
-            document.removeEventListener('click', playAudioOnce);
-        });
+        // إخفاء الفقرات في البداية
+        paragraphs.forEach(p => p.style.opacity = 0);
 
-        // Prevent closing via F5/browser back for more realism (can be bypassed)
-        window.onbeforeunload = function() {
-            return "هل أنت متأكد من مغادرة هذه الصفحة؟ قد تفقد بياناتك إذا غادرت الآن.";
+        // **تشغيل الدالة بمجرد تحميل الصفحة**
+        window.onload = () => {
+            // تأخير بسيط قبل بدء التسلسل لضمان تحميل الصفحة بالكامل
+            setTimeout(startSequence, 1000); // يبدأ التسلسل بعد 1 ثانية من تحميل الصفحة
         };
 
+
+        // Function to show/hide popup
         function showPopup() {
             document.getElementById('popupOverlay').classList.add('active');
             alarmSound.pause(); // Pause sound when popup shows
@@ -273,11 +277,10 @@
             // alarmSound.play().catch(e => console.error("Error playing sound:", e));
         }
 
-        // إخفاء الفقرات في البداية
-        paragraphs.forEach(p => p.style.opacity = 0);
-
-        // البدء بمجرد تحميل الصفحة (لكن الصوت هيشتغل بعد أول نقرة)
-        // window.onload = startSequence; // مش هتشتغل مع الصوت تلقائيًا
+        // Prevent closing via F5/browser back for more realism (can be bypassed)
+        window.onbeforeunload = function() {
+            return "هل أنت متأكد من مغادرة هذه الصفحة؟ قد تفقد بياناتك إذا غادرت الآن.";
+        };
     </script>
 </body>
 </html>

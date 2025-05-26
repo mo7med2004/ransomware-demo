@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحذير أمني خطير: اختراق النظام!</title>
+    <title>تنبيه: فشل التحميل!</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -45,7 +45,7 @@
             margin-bottom: 25px;
             color: #FFF;
             opacity: 0; /* لجعل النص يظهر تدريجياً */
-            animation: typeIn 0.05s forwards; /* للتحكم في ظهور النص حرف بحرف */
+            /* animation: typeIn 0.05s forwards; */ /* هنلغيها هنا ونفعلها ب JS */
         }
         .progress-bar {
             width: 80%;
@@ -60,9 +60,16 @@
             height: 100%;
             width: 0%;
             background-color: #FF0000;
-            animation: fillProgress 10s forwards linear; /* وقت وهمي لعملية الاختراق */
+            /* animation: fillProgress 10s forwards linear; */ /* هنلغيها هنا ونفعلها ب JS */
             border-radius: 15px;
             box-shadow: 0 0 10px #FF0000;
+            transition: width 0.5s linear; /* لجعل الشريط يمتلئ بسرعة */
+        }
+        .status-message {
+            font-size: 1.3em;
+            color: #FFF;
+            margin-top: 10px;
+            min-height: 30px; /* للحفاظ على المساحة */
         }
         .button {
             display: inline-block;
@@ -144,19 +151,9 @@
             50% { transform: scale(1.03); }
             100% { transform: scale(1); }
         }
-        @keyframes fillProgress {
-            from { width: 0%; }
-            to { width: 100%; }
-        }
-
-        /* Typewriter effect for paragraphs */
-        p:nth-of-type(1) { animation-delay: 1.5s; }
-        p:nth-of-type(2) { animation-delay: 3s; }
-        p:nth-of-type(3) { animation-delay: 4.5s; }
-        p:nth-of-type(4) { animation-delay: 6s; }
-
-        @keyframes typeIn {
-            to { opacity: 1; }
+        @keyframes slideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
@@ -167,69 +164,95 @@
     </audio>
 
     <div class="warning-container">
-        <h1>تحذير أمني خطير!</h1>
-        <p>تم اكتشاف محاولة اختراق نشطة لجهازك.</p>
-        <p>ملفاتك الشخصية قيد التشفير الآن.</p>
-        <p>لا تحاول إغلاق هذه الصفحة أو إعادة تشغيل الجهاز لتجنب فقدان البيانات بشكل دائم.</p>
-       <p> لإلغاء عملية الاختراق واستعادة البيانات، يرجى التواصل مع الدعم قبل انتهاء عملية التشفير ملحوظة تم اضافة هذا الخيار فقط لتحذيرك لانك لعبت مع الشخص الغلط المره القادمة سوف يتم ازلة هذا الخيار .</p>
+        <h1>تنبيه أمني خطير!</h1>
+        <p id="p1">تم اكتشاف محاولة تحميل غير مصرح بها.</p>
+        <p id="p2">يتم الآن فحص سلامة النظام.</p>
+        <p id="p3">ملفاتك قد تكون في خطر.</p>
 
         <div class="progress-bar">
-            <div class="progress-fill"></div>
+            <div class="progress-fill" id="progressFill"></div>
         </div>
-        <p style="opacity:1; font-size:1.1em; color:#CCC; margin-top:10px;">جارٍ تحليل المخاطر... <span></span></p>
+        <p class="status-message" id="statusMessage">جاري التحقق من التهديد...</p>
 
-        <button class="button" onclick="showPopup()">تواصل مع الدعم الفني</button>
+        <button class="button" onclick="showPopup()">طلب المساعدة الفنية</button>
     </div>
 
     <div class="overlay" id="popupOverlay">
         <div class="popup">
             <h2>تنبيه هام!</h2>
-            <p>لا توجد بيانات اتصال حقيقية.</p>
-            <p>هذه الصفحة هي جزء من مشروع تخرج تعليمي لإظهار خطورة التصيد الاحتيالي وهجمات الرانسوموير.</p>
+            <p> لا يوجد اختارق حقيقي.</p>
+            <p>هذه الصفحة عملتها علي شانك علي شان احذرك مش اكتر انك بتلعب مع الشخص الغلط المره الجايه ملفاتك كلها هتتشفر و ريني هتستخدم الموبيل ازاي.</p>
             <button class="popup-button" onclick="closePopup()">فهمت</button>
         </div>
     </div>
 
     <script>
         const alarmSound = document.getElementById('alarmSound');
-        const phrases = [
-            "جارٍ تحليل المخاطر...",
-            "تحقق من وجود برامج ضارة...",
-            "فحص ثغرات النظام...",
-            "تشفير البيانات: 25%...", // يمكنك إضافة رسائل وهمية لعملية التشفير
-            "تشفير البيانات: 50%...",
-            "تشفير البيانات: 75%...",
-            "الوصول غير المصرح به: اكتمل."
+        const progressFill = document.getElementById('progressFill');
+        const statusMessage = document.getElementById('statusMessage');
+        const paragraphs = [
+            document.getElementById('p1'),
+            document.getElementById('p2'),
+            document.getElementById('p3')
         ];
-        let phraseIndex = 0;
-        const statusSpan = document.querySelector('.warning-container span');
 
-        function startTypingEffect() {
-            const paragraphs = document.querySelectorAll('.warning-container p:not(:last-of-type)');
-            paragraphs.forEach((p, index) => {
-                const text = p.textContent;
-                p.textContent = ''; // Clear text to type it out
+        const messages = [
+            "جاري التحقق من التهديد...",
+            "تحميل البيانات الخبيثة...",
+            "فشل تحميل العنصر! تم إيقاف العملية.",
+            "النظام الآن في حالة حظر."
+        ];
+        let messageIndex = 0;
+
+        // Function to type out text for each paragraph
+        function typeText(element, text, delay) {
+            return new Promise(resolve => {
                 let charIndex = 0;
+                element.textContent = '';
+                element.style.opacity = 1;
                 const typingInterval = setInterval(() => {
                     if (charIndex < text.length) {
-                        p.textContent += text.charAt(charIndex);
+                        element.textContent += text.charAt(charIndex);
                         charIndex++;
                     } else {
                         clearInterval(typingInterval);
+                        resolve();
                     }
-                }, 50); // Adjust typing speed
+                }, 40); // سرعة كتابة النص
             });
         }
 
-        function updateStatus() {
-            statusSpan.textContent = phrases[phraseIndex];
-            phraseIndex = (phraseIndex + 1) % phrases.length;
-            setTimeout(updateStatus, 2000); // Change phrase every 2 seconds
+        async function startSequence() {
+            // تشغيل الصوت عند بداية التفاعل (بسبب قيود المتصفحات على التشغيل التلقائي)
+            alarmSound.play().catch(e => console.error("Error playing sound:", e));
+
+            await typeText(paragraphs[0], messages[0], 0); // "جاري التحقق..."
+            await new Promise(resolve => setTimeout(resolve, 1000)); // انتظر ثانية
+
+            statusMessage.textContent = messages[1]; // "تحميل البيانات الخبيثة..."
+            progressFill.style.width = '100%'; // تحميل الشريط بسرعة
+            await new Promise(resolve => setTimeout(resolve, 800)); // انتظر 0.8 ثانية لاكتمال الشريط
+
+            statusMessage.textContent = messages[2]; // "فشل تحميل العنصر! تم إيقاف العملية."
+            statusMessage.style.color = '#FFDDDD'; // لون مختلف لرسالة الفشل
+            alarmSound.pause(); // إيقاف صوت الإنذار بعد الفشل
+            alarmSound.currentTime = 0; // إعادة الصوت للبداية لو هيتشغل تاني
+
+            await new Promise(resolve => setTimeout(resolve, 1500)); // انتظر 1.5 ثانية
+
+            statusMessage.textContent = messages[3]; // "النظام الآن في حالة حظر."
+            statusMessage.style.color = '#FF0000'; // نرجع اللون الأصلي
+
+            // يمكنك إضافة المزيد من المؤثرات هنا بعد فشل التحميل
+
+            // For the demo, show the popup after a short delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            // showPopup(); // ممكن تشغل البوب أب تلقائيا هنا أو تخلي الزر هو اللي يشغلها
         }
 
         // Play sound when user interacts (due to browser autoplay policies)
         document.addEventListener('click', function playAudioOnce() {
-            alarmSound.play().catch(e => console.error("Error playing sound:", e));
+            startSequence();
             document.removeEventListener('click', playAudioOnce);
         });
 
@@ -241,19 +264,20 @@
         function showPopup() {
             document.getElementById('popupOverlay').classList.add('active');
             alarmSound.pause(); // Pause sound when popup shows
+            alarmSound.currentTime = 0;
         }
 
         function closePopup() {
             document.getElementById('popupOverlay').classList.remove('active');
-            alarmSound.play().catch(e => console.error("Error playing sound:", e)); // Resume sound
+            // هنا ممكن تشغل الصوت تاني لو عايز، أو تسيبه متوقف
+            // alarmSound.play().catch(e => console.error("Error playing sound:", e));
         }
 
-        // Initial calls
-        window.onload = () => {
-            startTypingEffect();
-            updateStatus();
-        };
+        // إخفاء الفقرات في البداية
+        paragraphs.forEach(p => p.style.opacity = 0);
 
+        // البدء بمجرد تحميل الصفحة (لكن الصوت هيشتغل بعد أول نقرة)
+        // window.onload = startSequence; // مش هتشتغل مع الصوت تلقائيًا
     </script>
 </body>
 </html>

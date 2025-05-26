@@ -1,22 +1,79 @@
-
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Warning</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تنبيه أمني عاجل!</title>
     <style>
         body {
-            background-color: black;
-            color: red;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fdd;
+            color: #d33;
             text-align: center;
-            padding-top: 20%;
-            font-size: 24px;
+            padding: 50px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #fff;
+            border: 5px solid #d33;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 {
+            color: #c00;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .icon {
+            font-size: 4em;
+            color: #c00;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite alternate;
+        }
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+        .button {
+            display: inline-block;
+            background-color: #c00;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #a00;
         }
     </style>
 </head>
 <body>
-    <p> احسنلك متلعبش معيا علي شان مزعلكش المره دي بعتلك لينك تحزير المره الحايه صورة هشفلك بياناتك كلها 🖕.</p>
+    <div class="container">
+        <div class="icon">⚠️</div>
+        <h1>تنبيه أمني خطير!</h1>
+        <p>تم اكتشاف محاولة اختراق لجهازك.</p>
+        <p>قد تكون بياناتك الشخصية في خطر.</p>
+        <p>لا تحاول إغلاق هذه الصفحة أو إعادة تشغيل الجهاز لتجنب فقدان البيانات.</p>
+        <p>يرجى الاتصال بالدعم الفني فوراً على الرقم: 19XXX (رقم وهمي)</p>
+        <a href="#" class="button">اتصل بالدعم الفني الآن</a>
+    </div>
 </body>
 </html>
